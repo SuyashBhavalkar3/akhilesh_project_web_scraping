@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vishal Sales - Premium Laptop Collection</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary-blue: #00bfff;
+      --secondary-blue: #0066cc;
+      --dark-bg: #0b0c1e;
+      --card-bg: #1b1c33;
+      --card-bg-hover: #20224a;
+      --accent-gold: #ffcc00;
+      --text-light: #ddd;
+      --sidebar-bg: rgba(13, 27, 42, 0.95);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--dark-bg), #1a1a2e, #16213e);
+      color: #fff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--dark-bg);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(45deg, var(--primary-blue), var(--secondary-blue));
+      border-radius: 10px;
+    }
+
+    /* Header Section */
+    .header-section {
+      background: linear-gradient(135deg, var(--sidebar-bg), rgba(27, 28, 51, 0.8));
+      backdrop-filter: blur(10px);
+      padding: 20px 0;
+      margin-bottom: 30px;
+      border-bottom: 2px solid rgba(0, 191, 255, 0.2);
+    }
+
+    .page-title {
+      font-size: 2.5rem;
+      font-weight: 900;
+      background: linear-gradient(45deg, var(--primary-blue), #ffffff);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .breadcrumb-nav {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      font-size: 1.1rem;
+      color: var(--text-light);
+    }
+
+    .breadcrumb-nav a {
+      color: var(--primary-blue);
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .breadcrumb-nav a:hover {
+      color: #ffffff;
+      text-shadow: 0 0 10px var(--primary-blue);
+    }
+
+    /* Enhanced Sidebar */
+    .sidebar {
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      overflow-y: auto;
+      background: linear-gradient(135deg, var(--sidebar-bg), rgba(27, 28, 51, 0.8));
+      backdrop-filter: blur(15px);
+      border-right: 2px solid rgba(0, 191, 255, 0.2);
+      padding: 25px;
+      box-shadow: 5px 0 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .sidebar h5 {
+      color: var(--primary-blue);
+      font-weight: bold;
+      font-size: 1.3rem;
+      margin: 25px 0 15px 0;
+      padding-bottom: 8px;
+      border-bottom: 2px solid rgba(0, 191, 255, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .sidebar h5:first-child {
+      margin-top: 0;
+    }
+
+    /* Enhanced Form Controls */
+    .form-check {
+      margin-bottom: 12px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .form-check:hover {
+      background: rgba(0, 191, 255, 0.1);
+      transform: translateX(5px);
+    }
+
+    .form-check-label {
+      color: var(--text-light);
+      cursor: pointer;
+      font-weight: 500;
+      transition: color 0.3s ease;
+      user-select: none;
+    }
+
+    .form-check-input:checked + .form-check-label {
+      color: var(--primary-blue);
+      font-weight: 600;
+    }
+
+    .form-check-input {
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(0, 191, 255, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .form-check-input:checked {
+      background-color: var(--primary-blue);
+      border-color: var(--primary-blue);
+      box-shadow: 0 0 10px rgba(0, 191, 255, 0.5);
+    }
+
+    .form-check-input:focus {
+      box-shadow: 0 0 15px rgba(0, 191, 255, 0.3);
+      border-color: var(--primary-blue);
+    }
+
+    /* Enhanced Price Range Slider */
+    .price-section {
+      background: rgba(0, 191, 255, 0.05);
+      padding: 20px;
+      border-radius: 15px;
+      margin-top: 20px;
+      border: 1px solid rgba(0, 191, 255, 0.2);
+    }
+
+    .form-range {
+      background: transparent;
+      height: 6px;
+    }
+
+    .form-range::-webkit-slider-track {
+      background: linear-gradient(to right, var(--primary-blue), var(--secondary-blue));
+      height: 6px;
+      border-radius: 3px;
+    }
+
+    .form-range::-webkit-slider-thumb {
+      background: var(--primary-blue);
+      border: 3px solid #fff;
+      height: 20px;
+      width: 20px;
+      border-radius: 50%;
+      box-shadow: 0 2px 10px rgba(0, 191, 255, 0.5);
+    }
+
+    .price-display {
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--accent-gold);
+      margin-top: 10px;
+    }
+
+    /* Main Content Area */
+    .main-content {
+      padding: 30px;
+      min-height: 100vh;
+    }
+
+    /* Enhanced Search Bar */
+    .search-section {
+      background: linear-gradient(135deg, var(--card-bg), var(--card-bg-hover));
+      padding: 25px;
+      border-radius: 20px;
+      margin-bottom: 30px;
+      border: 1px solid rgba(0, 191, 255, 0.2);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .search-input {
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid rgba(0, 191, 255, 0.3);
+      color: white;
+      padding: 15px 20px;
+      border-radius: 50px;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+    }
+
+    .search-input:focus {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--primary-blue);
+      box-shadow: 0 0 20px rgba(0, 191, 255, 0.3);
+      color: white;
+    }
+
+    .search-input::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    /* Control Buttons */
+    .control-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .btn-back {
+      background: linear-gradient(45deg, #6c757d, #495057);
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 25px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-back:hover {
+      background: linear-gradient(45deg, #495057, #343a40);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      color: white;
+    }
+
+    .results-info {
+      color: var(--text-light);
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+
+    /* Enhanced Product Cards */
+    .product-card {
+      background: linear-gradient(145deg, var(--card-bg), var(--card-bg-hover));
+      border: 1px solid rgba(0, 191, 255, 0.1);
+      border-radius: 20px;
+      overflow: hidden;
+      transition: all 0.4s ease;
+      position: relative;
+      height: 100%;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .product-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0, 191, 255, 0.1), transparent);
+      transition: left 0.5s ease;
+      z-index: 1;
+    }
+
+    .product-card:hover::before {
+      left: 100%;
+    }
+
+    .product-card:hover {
+      transform: translateY(-10px) rotateX(2deg);
+      box-shadow: 0 25px 50px rgba(0, 191, 255, 0.2);
+      border-color: var(--primary-blue);
+    }
+
+    .product-image-container {
+      position: relative;
+      height: 280px;
+      background: linear-gradient(135deg, #ffffff, #f8f9fa);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    .product-image {
+      max-height: 100%;
+      max-width: 100%;
+      object-fit: contain;
+      transition: transform 0.4s ease;
+      z-index: 2;
+      position: relative;
+    }
+
+    .product-card:hover .product-image {
+      transform: scale(1.05);
+    }
+
+    .product-body {
+      padding: 25px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .product-title {
+      color: var(--primary-blue);
+      font-weight: 700;
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .product-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+
+    .product-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-light);
+      font-size: 0.9rem;
+    }
+
+    .product-brand i {
+      color: var(--primary-blue);
+      width: 16px;
+    }
+
+    .product-pricing {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .discounted-price {
+      color: var(--accent-gold);
+      font-size: 1.4rem;
+      font-weight: bold;
+    }
+
+    .original-price {
+      color: #888;
+      text-decoration: line-through;
+      font-size: 1rem;
+    }
+
+    .product-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-view-details {
+      background: linear-gradient(45deg, var(--primary-blue), var(--secondary-blue));
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 25px;
+      font-weight: bold;
+      flex: 1;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      text-align: center;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-view-details:hover {
+      background: linear-gradient(45deg, var(--secondary-blue), #004499);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 191, 255, 0.4);
+      color: white;
+    }
+
+    .rating-badge {
+      background: linear-gradient(45deg, var(--accent-gold), #ffa500);
+      color: #000;
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 4px 15px rgba(255, 204, 0, 0.3);
+    }
+
+    /* Enhanced Pagination */
+    .pagination-container {
+      margin-top: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pagination-btn {
+      background: linear-gradient(145deg, var(--card-bg), var(--card-bg-hover));
+      color: var(--primary-blue);
+      border: 2px solid rgba(0, 191, 255, 0.3);
+      padding: 12px 18px;
+      border-radius: 15px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .pagination-btn:hover:not(:disabled) {
+      background: var(--primary-blue);
+      color: white;
+      border-color: var(--primary-blue);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 191, 255, 0.3);
+    }
+
+    .pagination-btn.active {
+      background: var(--primary-blue);
+      color: white;
+      border-color: var(--primary-blue);
+    }
+
+    .pagination-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Loading Animation */
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 200px;
+      font-size: 1.2rem;
+      color: var(--primary-blue);
+    }
+
+    .spinner {
+      border: 3px solid rgba(0, 191, 255, 0.3);
+      border-top: 3px solid var(--primary-blue);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin-right: 15px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* No Results State */
+    .no-results {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-light);
+    }
+
+    .no-results i {
+      font-size: 4rem;
+      color: var(--primary-blue);
+      margin-bottom: 20px;
+    }
+
+    .no-results h3 {
+      color: var(--primary-blue);
+      margin-bottom: 15px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .sidebar {
+        position: relative;
+        height: auto;
+        margin-bottom: 20px;
+      }
+      
+      .page-title {
+        font-size: 2rem;
+      }
+      
+      .control-section {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .search-input {
+        margin-bottom: 15px;
+      }
+      
+      .product-actions {
+        flex-direction: column;
+        gap: 15px;
+      }
+      
+      .pagination-container {
+        flex-wrap: wrap;
+      }
+    }
+
+    /* Animation for cards loading */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .product-card {
+      animation: fadeInUp 0.6s ease forwards;
+    }
+
+    .product-card:nth-child(1) { animation-delay: 0.1s; }
+    .product-card:nth-child(2) { animation-delay: 0.2s; }
+    .product-card:nth-child(3) { animation-delay: 0.3s; }
+    .product-card:nth-child(4) { animation-delay: 0.4s; }
+    .product-card:nth-child(5) { animation-delay: 0.5s; }
+    .product-card:nth-child(6) { animation-delay: 0.6s; }
+  </style>
+</head>
+<body>
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="container-fluid">
+      <h1 class="page-title">💻 Premium Laptop Collection</h1>
+      <div class="breadcrumb-nav">
+        <a href="index.html"><i class="fas fa-home"></i> Home</a>
+        <span><i class="fas fa-chevron-right"></i></span>
+        <span>Laptop Products</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Enhanced Sidebar -->
+      <div class="col-lg-3 col-md-4">
+        <div class="sidebar">
+          <h5><i class="fas fa-list"></i> Categories</h5>
+          <form id="filter-form">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="category" value="mobile" onclick="location.href='mobile.html'">
+              <label class="form-check-label">📱 Mobile</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="category" value="mobile-accessories" onclick="location.href='mobile-accessories.html'">
+              <label class="form-check-label">🎧 Mobile Accessories</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="category" value="laptop" checked>
+              <label class="form-check-label">💻 Laptop</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="category" value="laptop-accessories" onclick="location.href='laptop-accessories.html'">
+              <label class="form-check-label">⌨️ Laptop Accessories</label>
+            </div>
+          </form>
+
+          <h5><i class="fas fa-tags"></i> Brands</h5>
+          <div id="brand-filters">
+            <!-- Dynamic brand filters will be inserted here -->
+          </div>
+
+          <div class="price-section">
+            <h5><i class="fas fa-rupee-sign"></i> Price Range</h5>
+            <input type="range" id="priceRangeMax" class="form-range" min="0" max="200000" step="5000" value="200000">
+            <div class="price-display">
+              Up to: ₹<span id="priceMaxValue">2,00,000</span>
+            </div>
+          </div>
+
+          <h5><i class="fas fa-store"></i> E-commerce</h5>
+          <div id="ecommerce-filters">
+            <!-- Dynamic ecommerce filters will be inserted here -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="col-lg-9 col-md-8">
+        <div class="main-content">
+          <!-- Search Section -->
+          <div class="search-section">
+            <div class="input-group">
+              <span class="input-group-text bg-transparent border-0">
+                <i class="fas fa-search text-info"></i>
+              </span>
+              <input type="text" id="search-input" class="search-input form-control" placeholder="Search by laptop name or brand...">
+            </div>
+          </div>
+
+          <!-- Control Section -->
+          <div class="control-section">
+            <a href="index.html" class="btn-back">
+              <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
+            <div class="results-info" id="resultsInfo">
+              Loading products...
+            </div>
+          </div>
+
+          <!-- Products Container -->
+          <div class="row g-4" id="product-container">
+            <div class="loading col-12">
+              <div class="spinner"></div>
+              Loading premium laptop collection...
+            </div>
+          </div>
+
+          <!-- Pagination -->
+          <div class="pagination-container" id="pagination" style="display: none;">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  let allProducts = [];
+  let filteredProducts = [];
+  let currentPage = 1;
+  const productsPerPage = 12;
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const container = document.getElementById("product-container");
+    const searchInput = document.getElementById("search-input");
+    const brandFiltersDiv = document.getElementById("brand-filters");
+    const ecommerceFiltersDiv = document.getElementById("ecommerce-filters");
+    const paginationDiv = document.getElementById("pagination");
+    const priceRangeMax = document.getElementById("priceRangeMax");
+    const priceMaxValue = document.getElementById("priceMaxValue");
+    const resultsInfo = document.getElementById("resultsInfo");
+
+    // Format price display
+    function formatPrice(value) {
+      return new Intl.NumberFormat('en-IN').format(value);
+    }
+
+    // Update max price value
+    priceRangeMax.addEventListener("input", () => {
+      priceMaxValue.textContent = formatPrice(priceRangeMax.value);
+      debounceFilter();
+    });
+
+    // Load laptop data
+    fetch("laptop.json")
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to load products');
+        return res.json();
+      })
+      .then(data => {
+        allProducts = data;
+        filteredProducts = [...allProducts];
+        renderFilters();
+        renderPage(currentPage);
+        renderPagination();
+        updateResultsInfo();
+      })
+      .catch(err => {
+        console.error("Error loading JSON:", err);
+        container.innerHTML = `
+          <div class="no-results col-12">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h3>Unable to Load Products</h3>
+            <p>Please check if the laptop.json file exists and try again.</p>
+          </div>
+        `;
+      });
+
+    function renderPage(page) {
+      container.innerHTML = "";
+      
+      if (filteredProducts.length === 0) {
+        container.innerHTML = `
+          <div class="no-results col-12">
+            <i class="fas fa-search"></i>
+            <h3>No Products Found</h3>
+            <p>Try adjusting your search criteria or filters to find what you're looking for.</p>
+          </div>
+        `;
+        return;
+      }
+
+      const start = (page - 1) * productsPerPage;
+      const end = start + productsPerPage;
+      const pageProducts = filteredProducts.slice(start, end);
+
+      pageProducts.forEach((product, index) => {
+        const card = document.createElement("div");
+        card.classList.add("col-xl-4", "col-lg-6", "col-md-6", "mb-4");
+        card.style.animationDelay = `${index * 0.1}s`;
+
+        // Handle image URL - check if it's an array or string
+        let imageUrl = 'https://via.placeholder.com/300x250?text=No+Image';
+        if (product.image && product.image.urls && Array.isArray(product.image.urls) && product.image.urls.length > 0) {
+          imageUrl = product.image.urls[0];
+        } else if (product.image && typeof product.image === 'string') {
+          imageUrl = product.image;
+        } else if (product.image_url) {
+          imageUrl = product.image_url;
+        }
+
+        const rating = product.rating || 'N/A';
+        const brand = product.brand || 'Unknown Brand';
+
+        card.innerHTML = `
+          <div class="card product-card h-100">
+            <div class="product-image-container">
+              <img src="${imageUrl}" class="product-image" alt="${product.title}" onerror="this.src='https://via.placeholder.com/300x250?text=No+Image'">
+            </div>
+            <div class="product-body">
+              <h5 class="product-title">${product.title}</h5>
+              <div class="product-meta">
+                <div class="product-brand">
+                  <i class="fas fa-tag"></i>
+                  <span><strong>Brand:</strong> ${brand}</span>
+                </div>
+              </div>
+              <div class="product-pricing">
+                <span class="discounted-price">₹${formatPrice(product.discounted_price)}</span>
+                <span class="original-price">₹${formatPrice(product.price)}</span>
+              </div>
+              <div class="product-actions">
+                <a href="laptop_Product.html?id=${product.product_id}" class="btn-view-details">
+                  <i class="fas fa-eye"></i> View Details
+                </a>
+                <div class="rating-badge">
+                  <i class="fas fa-star"></i> ${rating}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function renderPagination() {
+      paginationDiv.innerHTML = "";
+      const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+      
+      if (totalPages <= 1) {
+        paginationDiv.style.display = "none";
+        return;
+      }
+      
+      paginationDiv.style.display = "flex";
+
+      // Previous Button
+      const prevBtn = document.createElement("button");
+      prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i> Previous';
+      prevBtn.className = "pagination-btn";
+      prevBtn.disabled = currentPage === 1;
+      prevBtn.addEventListener("click", () => {
+        if (currentPage > 1) {
+          currentPage--;
+          renderPage(currentPage);
+          renderPagination();
+          updateResultsInfo();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      });
+      paginationDiv.appendChild(prevBtn);
+
+      // Page numbers (show max 5 pages)
+      const startPage = Math.max(1, currentPage - 2);
+      const endPage = Math.min(totalPages, startPage + 4);
+
+      for (let i = startPage; i <= endPage; i++) {
+        const btn = document.createElement("button");
+        btn.textContent = i;
+        btn.className = "pagination-btn";
+        if (i === currentPage) btn.classList.add("active");
+        btn.addEventListener("click", () => {
+          currentPage = i;
+          renderPage(currentPage);
+          renderPagination();
+          updateResultsInfo();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        paginationDiv.appendChild(btn);
+      }
+
+      // Next Button
+      const nextBtn = document.createElement("button");
+      nextBtn.innerHTML = 'Next <i class="fas fa-chevron-right"></i>';
+      nextBtn.className = "pagination-btn";
+      nextBtn.disabled = currentPage === totalPages;
+      nextBtn.addEventListener("click", () => {
+        if (currentPage < totalPages) {
+          currentPage++;
+          renderPage(currentPage);
+          renderPagination();
+          updateResultsInfo();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      });
+      paginationDiv.appendChild(nextBtn);
+    }
+
+    function renderFilters() {
+      // Extract unique brands
+      const brands = [...new Set(allProducts.map(p => p.brand).filter(Boolean))];
+      brandFiltersDiv.innerHTML = brands.map(brand => `
+        <div class="form-check">
+          <input class="form-check-input brand-filter" type="checkbox" value="${brand}" id="brand-${brand}">
+          <label class="form-check-label" for="brand-${brand}">${brand}</label>
+        </div>
+      `).join("");
+
+      // E-commerce platforms
+      const ecommerce = ["Flipkart", "Amazon", "Croma", "Vijay Sales"];
+      ecommerceFiltersDiv.innerHTML = ecommerce.map(platform => `
+        <div class="form-check">
+          <input class="form-check-input ecommerce-filter" type="checkbox" value="${platform}" id="ecom-${platform}">
+                    <label class="form-check-label" for="ecom-${platform}">${platform}</label>
+        </div>
+      `).join("");
+
+      // Add event listeners for filters
+      document.querySelectorAll(".brand-filter, .ecommerce-filter").forEach(input => {
+        input.addEventListener("change", debounceFilter);
+      });
+    }
+
+    function updateResultsInfo() {
+      resultsInfo.textContent = `${filteredProducts.length} products found`;
+    }
+
+    function debounceFilter() {
+      clearTimeout(window.filterTimeout);
+      window.filterTimeout = setTimeout(applyFilters, 300);
+    }
+
+    function applyFilters() {
+      const searchTerm = searchInput.value.trim().toLowerCase();
+      const selectedBrands = Array.from(document.querySelectorAll(".brand-filter:checked")).map(el => el.value);
+      const selectedEcom = Array.from(document.querySelectorAll(".ecommerce-filter:checked")).map(el => el.value);
+      const maxPrice = parseInt(priceRangeMax.value);
+
+      filteredProducts = allProducts.filter(product => {
+        const titleMatch = product.title.toLowerCase().includes(searchTerm);
+        const brandMatch = selectedBrands.length ? selectedBrands.includes(product.brand) : true;
+        const ecomMatch = selectedEcom.length ? (product.ecommerce && product.ecommerce.some(site => selectedEcom.includes(site))) : true;
+        const priceMatch = product.discounted_price <= maxPrice;
+
+        return titleMatch && brandMatch && ecomMatch && priceMatch;
+      });
+
+      currentPage = 1;
+      renderPage(currentPage);
+      renderPagination();
+      updateResultsInfo();
+    }
+
+    // Search input listener
+    searchInput.addEventListener("input", debounceFilter);
+  });
+  </script>
+
+  <!-- Footer Section -->
+  <footer class="text-center text-light py-4" style="background: var(--dark-bg); border-top: 2px solid rgba(0, 191, 255, 0.2); margin-top: 50px;">
+    &copy; 2025 Vishal Sales. All Rights Reserved.
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
