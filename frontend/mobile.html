@@ -23,17 +23,18 @@
       padding: 0;
       box-sizing: border-box;
     }
+    
     .brand-logo {
-    font-size: 2.5rem;          /* Increase size of text */
-    color: #00bfff !important;  /* Light blue color */
-    text-decoration: none;      /* Remove underline */
-  }
+      font-size: 2.5rem;
+      color: #00bfff !important;
+      text-decoration: none;
+    }
 
-  .brand-logo i {
-    font-size: 2.8rem;          /* Make bolt icon a bit bigger */
-    color: #00bfff;             /* Light blue color */
-    margin-right: 8px;
-  }
+    .brand-logo i {
+      font-size: 2.8rem;
+      color: #00bfff;
+      margin-right: 8px;
+    }
 
     body {
       background: linear-gradient(135deg, var(--dark-bg), #1a1a2e, #16213e);
@@ -42,7 +43,7 @@
       line-height: 1.6;
     }
 
-    /* Custom Scrollbar */
+    
     ::-webkit-scrollbar {
       width: 8px;
     }
@@ -242,7 +243,7 @@
     /* Control Buttons */
     .control-section {
       display: flex;
-      justify-content: between;
+      justify-content: space-between;
       align-items: center;
       margin-bottom: 30px;
       flex-wrap: wrap;
@@ -513,6 +514,47 @@
       margin-bottom: 15px;
     }
 
+    /* Compare Bar Styles */
+    .compare-bar {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: linear-gradient(90deg, #007bff, #0056d2);
+      color: white;
+      padding: 15px 20px;
+      border-radius: 50px;
+      box-shadow: 0 4px 20px rgba(0, 123, 255, 0.4);
+      z-index: 1050;
+      display: none;
+      align-items: center;
+      gap: 15px;
+      max-width: 350px;
+    }
+
+    .compare-bar.show {
+      display: flex;
+    }
+
+    /* Modal Styles */
+    .modal-content {
+      background: var(--card-bg);
+      color: white;
+      border: 1px solid rgba(0, 191, 255, 0.3);
+    }
+
+    .modal-header {
+      border-bottom: 1px solid rgba(0, 191, 255, 0.3);
+    }
+
+    .modal-footer {
+      border-top: 1px solid rgba(0, 191, 255, 0.3);
+    }
+
+    .table-dark {
+      --bs-table-bg: var(--card-bg);
+      --bs-table-border-color: rgba(0, 191, 255, 0.3);
+    }
+
     /* Responsive Design */
     @media (max-width: 768px) {
       .sidebar {
@@ -541,6 +583,12 @@
       
       .pagination-container {
         flex-wrap: wrap;
+      }
+
+      .compare-bar {
+        right: 10px;
+        bottom: 10px;
+        max-width: calc(100vw - 20px);
       }
     }
 
@@ -571,23 +619,23 @@
 <body>
   <!-- Header Section -->
   <div class="header-section py-3">
-  <div class="container-fluid d-flex align-items-center justify-content-between">
-    <!-- Brand on the left -->
-    <a class="navbar-brand fw-bold brand-logo" href="index.html">
-      <i class="fas fa-bolt"></i> Vishal Sales
-    </a>
+    <div class="container-fluid d-flex align-items-center justify-content-between">
+      <!-- Brand on the left -->
+      <a class="navbar-brand fw-bold brand-logo" href="index.html">
+        <i class="fas fa-bolt"></i> Vishal Sales
+      </a>
 
-    <!-- Title & breadcrumb in center -->
-    <div class="text-center flex-grow-1">
-      <h1 class="page-title mb-2"> Premium Mobile Collection</h1>
-      <div class="breadcrumb-nav">
-        <a href="index.html"><i class="fas fa-home"></i> Home</a>
-        <span><i class="fas fa-chevron-right"></i></span>
-        <span>Mobile Products</span>
+      <!-- Title & breadcrumb in center -->
+      <div class="text-center flex-grow-1">
+        <h1 class="page-title mb-2">Premium Mobile Collection</h1>
+        <div class="breadcrumb-nav">
+          <a href="index.html"><i class="fas fa-home"></i> Home</a>
+          <span><i class="fas fa-chevron-right"></i></span>
+          <span>Mobile Products</span>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
   <div class="container-fluid">
     <div class="row">
@@ -727,8 +775,54 @@
     </div>
   </div>
 
+  <!-- Compare Bar -->
+  <div id="compareBar" class="compare-bar">
+    <div class="d-flex align-items-center">
+      <i class="fas fa-balance-scale me-2"></i>
+      <span id="compareCount" class="fw-semibold">0 products selected</span>
+    </div>
+    <button id="compareBtn" class="btn btn-light btn-sm fw-semibold px-3 rounded-pill" data-bs-toggle="modal" data-bs-target="#compareModal">
+      <i class="fas fa-exchange-alt me-1"></i> Compare
+    </button>
+  </div>
+
+  <!-- Compare Modal -->
+  <div class="modal fade" id="compareModal" tabindex="-1" aria-labelledby="compareModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="compareModalLabel">
+            <i class="fas fa-balance-scale me-2"></i>Product Comparison
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="table-responsive">
+            <table class="table table-dark table-striped">
+              <thead>
+                <tr id="compare-header">
+                  <th>Feature</th>
+                </tr>
+              </thead>
+              <tbody id="compare-body">
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-danger" id="clearCompare">Clear All</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
   <script>
   document.addEventListener("DOMContentLoaded", () => {
+    // Element references
     const searchInput = document.getElementById("searchInput");
     const brandFilters = document.querySelectorAll(".brand-filter");
     const ecommerceFilters = document.querySelectorAll(".ecommerce-filter");
@@ -737,9 +831,15 @@
     const productsContainer = document.getElementById("productsContainer");
     const resultsInfo = document.getElementById("resultsInfo");
     const pagination = document.getElementById("pagination");
+    const compareBar = document.getElementById("compareBar");
+    const compareCount = document.getElementById("compareCount");
+    const compareBtn = document.getElementById("compareBtn");
+    const clearCompareBtn = document.getElementById("clearCompare");
 
+    // Data variables
     let productsData = [];
     let filteredProducts = [];
+    let compareList = [];
     let currentPage = 1;
     const productsPerPage = 12;
 
@@ -798,11 +898,13 @@
 
         const imageUrl = product.image_url || 'https://via.placeholder.com/300x300?text=No+Image';
         const rating = product.rating || 'N/A';
+        const productId = product.product_id || product.id || index;
 
         card.innerHTML = `
           <div class="card product-card h-100">
             <div class="product-image-container">
-              <img src="${imageUrl}" class="product-image" alt="${product.title}" onerror="this.src='https://via.placeholder.com/300x300?text=No+Image'">
+              <img src="${imageUrl}" class="product-image" alt="${product.title}" 
+                   onerror="this.src='https://via.placeholder.com/300x300?text=No+Image'">
             </div>
             <div class="product-body">
               <h5 class="product-title">${product.title}</h5>
@@ -813,7 +915,7 @@
                 </div>
                 <div class="product-store">
                   <i class="fas fa-store"></i>
-                  <span><strong>Store:</strong> ${product.store|| 'N/A'}</span>
+                  <span><strong>Store:</strong> ${product.store || product.ecommerce || 'N/A'}</span>
                 </div>
               </div>
               <div class="product-pricing">
@@ -821,18 +923,83 @@
                 <span class="original-price">${product.price}</span>
               </div>
               <div class="product-actions">
-                <a href="product.html?id=${product.product_id}" class="btn-view-details">
+                <a href="product.html?id=${productId}" class="btn-view-details">
                   <i class="fas fa-eye"></i> View Details
                 </a>
                 <div class="rating-badge">
                   <i class="fas fa-star"></i> ${rating}
                 </div>
               </div>
+              <!-- Compare Checkbox -->
+              <div class="form-check mt-2">
+                <input class="form-check-input compare-checkbox" type="checkbox" id="compare_${productId}"
+                  data-id="${productId}"
+                  data-name="${product.title}"
+                  data-price="${product.discounted_price}"
+                  data-ram="${product.ram || 'N/A'}"
+                  data-storage="${product.storage || 'N/A'}"
+                  data-battery="${product.battery || 'N/A'}"
+                  data-rating="${rating}"
+                  data-image="${imageUrl}">
+                <label class="form-check-label" for="compare_${productId}">Add to Compare</label>
+              </div>
             </div>
           </div>
         `;
+
         productsContainer.appendChild(card);
       });
+
+      // Add event listeners to compare checkboxes
+      addCompareListeners();
+    }
+
+    function addCompareListeners() {
+      const checkboxes = document.querySelectorAll('.compare-checkbox');
+      checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', handleCompareChange);
+      });
+    }
+
+    function handleCompareChange(event) {
+  const checkbox = event.target;
+  const product = productsData.find(p => p.product_id === checkbox.dataset.id);
+
+  if (!product) return;
+
+  const productData = {
+    id: product.product_id,
+    name: product.title,
+    price: product.price,
+    discounted_price: product.discounted_price,
+    brand: product.brand,
+    store: product.store || product.ecommerce || 'N/A',
+    specifications: product.specifications || {},
+    offers: product.offers || {},
+    rating: product.rating || "N/A",
+    image: product.image_url || 'https://via.placeholder.com/150'
+  };
+
+  if (checkbox.checked) {
+    if (compareList.length >= 5) {
+      alert("You can compare up to 5 products only!");
+      checkbox.checked = false;
+      return;
+    }
+    compareList.push(productData);
+  } else {
+    compareList = compareList.filter(p => p.id !== productData.id);
+  }
+
+  updateCompareBar();
+}
+    function updateCompareBar() {
+      if (compareList.length > 0) {
+        compareBar.classList.add('show');
+        compareCount.textContent = `${compareList.length} product(s) selected`;
+      } else {
+        compareBar.classList.remove('show');
+      }
     }
 
     function filterProducts() {
@@ -843,17 +1010,18 @@
       const selectedEcoms = Array.from(ecommerceFilters)
         .filter(e => e.checked)
         .map(e => e.value.toLowerCase());
-      const maxPrice = priceRange.value ? parseInt(priceRange.value) : Infinity;
+      const maxPrice = parseInt(priceRange.value) || Infinity;
 
       filteredProducts = productsData.filter(product => {
         const title = product.title.toLowerCase();
         const brand = product.brand.toLowerCase();
-        const ecommerce = product.ecommerce ? product.ecommerce.toLowerCase() : "";
-        const price = parseInt(product.discounted_price.replace(/[^\d]/g, "")) || 0;
+        const ecommerce = (product.ecommerce || product.store || "").toLowerCase();
+        const priceText = product.discounted_price.replace(/[^\d]/g, "");
+        const price = parseInt(priceText) || 0;
 
         const matchesSearch = title.includes(query) || brand.includes(query);
         const matchesBrand = selectedBrands.length === 0 || selectedBrands.includes(brand);
-        const matchesEcom = selectedEcoms.length === 0 || selectedEcoms.includes(ecommerce);
+        const matchesEcom = selectedEcoms.length === 0 || selectedEcoms.some(ecom => ecommerce.includes(ecom));
         const matchesPrice = price <= maxPrice;
 
         return matchesSearch && matchesBrand && matchesEcom && matchesPrice;
@@ -946,11 +1114,93 @@
       pagination.appendChild(nextBtn);
     }
 
+   function renderComparison() {
+  const headerRow = document.getElementById("compare-header");
+  const body = document.getElementById("compare-body");
+
+  headerRow.innerHTML = "<th>Feature</th>";
+  body.innerHTML = "";
+
+  // Create columns for each product
+  compareList.forEach(product => {
+    headerRow.innerHTML += `
+      <th style="min-width: 200px;">
+        <img src="${product.image}" class="img-fluid mb-2" style="max-height:80px; object-fit: contain;"><br>
+        <small>${product.name}</small>
+      </th>`;
+  });
+
+  // Define features to compare
+  const features = ["Store", "Brand", "Price", "Specifications", "Offers", "Rating"];
+
+  features.forEach(feature => {
+    const row = document.createElement("tr");
+    row.innerHTML = `<td><strong>${feature}</strong></td>`;
+
+    compareList.forEach(product => {
+      let value = "N/A";
+
+      switch(feature) {
+        case "Store":
+          value = product.store || "N/A";
+          break;
+        case "Brand":
+          value = product.brand || "N/A";
+          break;
+        case "Price":
+          value = product.discounted_price || product.price || "N/A";
+          break;
+        case "Specifications":
+          if (product.specifications && Object.keys(product.specifications).length > 0) {
+            value = `<ul style="padding-left: 15px; margin: 0;">`;
+            for (const [key, val] of Object.entries(product.specifications)) {
+              value += `<li><strong>${key.toUpperCase()}:</strong> ${val}</li>`;
+            }
+            value += `</ul>`;
+          }
+          break;
+        case "Offers":
+          if (product.offers && Object.keys(product.offers).length > 0) {
+            value = `<ul style="padding-left: 15px; margin: 0;">`;
+            for (const [key, val] of Object.entries(product.offers)) {
+              value += `<li>${val}</li>`;
+            }
+            value += `</ul>`;
+          }
+          break;
+        case "Rating":
+          value = product.rating || "N/A";
+          break;
+      }
+
+      row.innerHTML += `<td>${value}</td>`;
+    });
+
+    body.appendChild(row);
+  });
+}
+
+
+    function clearComparison() {
+      compareList = [];
+      updateCompareBar();
+      
+      // Uncheck all compare checkboxes
+      const checkboxes = document.querySelectorAll('.compare-checkbox');
+      checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+      });
+    }
+
     // Event listeners
     searchInput.addEventListener("input", debounce(filterProducts, 300));
     brandFilters.forEach(b => b.addEventListener("change", filterProducts));
     ecommerceFilters.forEach(e => e.addEventListener("change", filterProducts));
     priceRange.addEventListener("input", debounce(filterProducts, 300));
+
+    // Compare functionality event listeners
+    compareBtn.addEventListener("click", renderComparison);
+    clearCompareBtn.addEventListener("click", clearComparison);
 
     // Debounce function for better performance
     function debounce(func, wait) {
@@ -969,5 +1219,6 @@
     priceValue.textContent = formatPrice(priceRange.value);
   });
   </script>
+
 </body>
 </html>
