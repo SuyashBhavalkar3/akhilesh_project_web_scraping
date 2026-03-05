@@ -644,11 +644,9 @@
 
 
     /* Footer */
-    .footer {
-  background: #ffffff; /* professional white */
-  padding: 40px 20px 20px;
-  color: #333; /* dark text for contrast on white */
-  margin-top: 30px;
+   .footer {
+  background-color: #000;
+  color: #fff;
 }
 
 .footer h5, .footer h6 {
@@ -656,15 +654,15 @@
   margin-bottom: 15px;
 }
 
+
 .footer a {
-  color: #555; /* darker grey for links */
+  color: #fff;
   text-decoration: none;
-  transition: color 0.3s ease;
+}
+.footer a:hover {
+  color: var(--primary-blue); /* highlight on hover */
 }
 
-.footer a:hover {
-  color: #0d1b2a; /* heading color on hover */
-}
  /* IMPROVED COMPARISON SECTION */
     .comparison-section {
       padding: 100px 0;
@@ -1048,7 +1046,7 @@
   </section>
 
   <!-- Brands Section -->
- <section class="brands-section" id="brands">
+<section class="brands-section" id="brands">
   <div class="container brands-content">
     <h2 class="brands-title">Top Brands We Offer</h2>
     <p class="brands-subtitle">
@@ -1056,96 +1054,139 @@
     </p>
 
     <div class="brands-grid">
-      <div class="brand-card">
-        <div class="brand-logo">
-          <img src="../images/vivo.png" alt="Vivo"/>
-        </div>
-      </div>
 
       <div class="brand-card">
         <div class="brand-logo">
-          <img src="../images/samsung.png" alt="samsung"/>
-        </div>
-      </div>
-
-      <div class="brand-card">
-        <div class="brand-logo">
-          <img src="../images/oneplus.png" alt="oneplus"/>
-        </div>
-      </div>
-
-      <div class="brand-card">
-        <div class="brand-logo">
-          <img src="../images/oppo.png" alt="Oppo"/>
-        </div>
-      </div>
-
-      <div class="brand-card">
-        <div class="brand-logo">
-          <img src="../images/iphone.png" alt="iphone"/>
-        </div>
-      </div>
-       <div class="brand-card">
-        <div class="brand-logo">
-          <img src="../images/google.png" alt="Google"/>
-        </div>
-      </div>
-      <div class="brand-card">
-        <div class="brand-logo">
-          <img src="../images/nothing.png" alt="Nothing"/>
-        </div>
-      </div>
-       <div class="brand-card">
-        <div class="brand-logo">
-          <img src="../images/motorola.png" alt="Motorola"/>
-        </div>
-      </div>
-       <div class="brand-card">
-        <div class="brand-logo">
-          <img src="../images/nokia.png" alt="Nokia"/>
-        </div>
-      </div>
-       <div class="brand-card">
-        <div class="brand-logo">
-          <img src="../images/poco.jpeg" alt="Poco" height="100" width="100"/>
-        </div>
-      </div>
-       <div class="brand-card">
-        <div class="brand-logo">
-          <img src="../images/redmi.png" alt="Redmi" height="200"/>
-        </div>
-      </div>
-       <div class="brand-card">
-        <div class="brand-logo">
-          <img src="../images/realme.png" alt="Realme"/>
-        </div>
-      </div>
-      <div class="brand-card">
-        <div class="brand-logo">
-          <img src="../images/infinix.png" alt="Infinix" width="100"/>
-        </div>
-      </div>
-      <div class="brand-card">
-        <div class="brand-logo">
-          <img src="../images/mi.png" alt="MI"/>
-        </div>
-      </div>
-       <div class="brand-card">
-        <div class="brand-logo">
-          <img src="../images/lenevo.png" alt="Lenevo"/>
-        </div>
-      </div>
-       <div class="brand-card">
-        <div class="brand-logo">
-           <a href="mobile.html" target="_blank">
-          <img src="../images/asus.png" alt="Asus"/>
+          <a href="branddata.html?k=vivo">
+            <img src="../images/vivo.png" alt="Vivo"/>
           </a>
         </div>
       </div>
-      
+
+      <div class="brand-card">
+        <div class="brand-logo">
+          <a href="branddata.html">
+            <img src="../images/samsung.png" alt="Samsung"/>
+          </a>
+        </div>
+      </div>
+
+      <div class="brand-card">
+        <div class="brand-logo">
+          <a href="oneplus.html" target="_blank">
+            <img src="../images/oneplus.png" alt="OnePlus"/>
+          </a>
+        </div>
+      </div>
+
+      <div class="brand-card">
+        <div class="brand-logo">
+          <a href="oppo.html" target="_blank">
+            <img src="../images/oppo.png" alt="Oppo"/>
+          </a>
+        </div>
+      </div>
+
+      <div class="brand-card">
+        <div class="brand-logo">
+          <a href="iphone.html" target="_blank">
+            <img src="../images/iphone.png" alt="iPhone"/>
+          </a>
+        </div>
+      </div>
+
+      <div class="brand-card">
+        <div class="brand-logo">
+          <a href="google.html" target="_blank">
+            <img src="../images/google.png" alt="Google"/>
+          </a>
+        </div>
+      </div>
+
+      <div class="brand-card">
+        <div class="brand-logo">
+          <a href="nothing.html" target="_blank">
+            <img src="../images/nothing.png" alt="Nothing"/>
+          </a>
+        </div>
+      </div>
+
+      <div class="brand-card">
+        <div class="brand-logo">
+          <a href="motorola.html" target="_blank">
+            <img src="../images/motorola.png" alt="Motorola"/>
+          </a>
+        </div>
+      </div>
+
+      <div class="brand-card">
+        <div class="brand-logo">
+          <a href="nokia.html" target="_blank">
+            <img src="../images/nokia.png" alt="Nokia"/>
+          </a>
+        </div>
+      </div>
+
+      <div class="brand-card">
+        <div class="brand-logo">
+          <a href="poco.html" target="_blank">
+            <img src="../images/poco.jpeg" alt="Poco" height="100" width="100"/>
+          </a>
+        </div>
+      </div>
+
+      <div class="brand-card">
+        <div class="brand-logo">
+          <a href="redmi.html" target="_blank">
+            <img src="../images/redmi.png" alt="Redmi" height="200"/>
+          </a>
+        </div>
+      </div>
+
+      <div class="brand-card">
+        <div class="brand-logo">
+          <a href="realme.html" target="_blank">
+            <img src="../images/realme.png" alt="Realme"/>
+          </a>
+        </div>
+      </div>
+
+      <div class="brand-card">
+        <div class="brand-logo">
+          <a href="infinix.html" target="_blank">
+            <img src="../images/infinix.png" alt="Infinix" width="100"/>
+          </a>
+        </div>
+      </div>
+
+      <div class="brand-card">
+        <div class="brand-logo">
+          <a href="mi.html" target="_blank">
+            <img src="../images/mi.png" alt="MI"/>
+          </a>
+        </div>
+      </div>
+
+      <div class="brand-card">
+        <div class="brand-logo">
+          <a href="lenovo.html" target="_blank">
+            <img src="../images/lenevo.png" alt="Lenovo"/>
+          </a>
+        </div>
+      </div>
+
+      <div class="brand-card">
+        <div class="brand-logo">
+          <a href="asus.html" target="_blank">
+            <img src="../images/asus.png" alt="Asus"/>
+          </a>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
+
 
   <!-- Trusted Partners Section -->
   <section class="partners-section" id="partners">
@@ -1479,55 +1520,58 @@
     </div>
   </section>
 
-  <!-- Footer -->
-<!-- Footer -->
-  <footer class="footer" id="contact">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-4 col-md-6 mb-4">
-          <h5>
-            <i class="fas fa-bolt" style="color: var(--primary-blue);"></i> 
-            <span style="color: var(--primary-blue);">Vishal Sales</span>
-          </h5>
-          <p>Your trusted partner for premium electronics. We bring you the latest technology with unbeatable prices and exceptional customer service.</p>
-        </div>
-        <div class="col-lg-2 col-md-6 mb-4">
-          <h6>Quick Links</h6>
-          <ul class="list-unstyled">
-            <li><a href="#home">Home</a></li>
-            <li><a href="#brands">Brands</a></li>
-            <li><a href="#products">Products</a></li>
-            <li><a href="#contact">Contact</a></li>
-          </ul>
-        </div>
-        <div class="col-lg-2 col-md-6 mb-4">
-          <h6>Categories</h6>
-          <ul class="list-unstyled">
-            <li><a href="#">Mobiles</a></li>
-            <li><a href="#">Laptops</a></li>
-            <li><a href="#">Accessories</a></li>
-            <li><a href="#">Gaming</a></li>
-          </ul>
-        </div>
-        <div class="col-lg-4 col-md-6 mb-4">
-          <h6>Contact Info</h6>
-          <p><i class="fas fa-envelope me-2" style="color: var(--primary-blue);"></i>support@vishalsales.com</p>
-          <p><i class="fas fa-phone me-2" style="color: var(--primary-blue);"></i>+91 (555) 123-4567</p>
-          <p><i class="fas fa-map-marker-alt me-2" style="color: var(--primary-blue);"></i>Nagpur, Maharashtra, India</p>
-          <div class="mt-3">
-            <a href="#" class="social-icon facebook"><i class="fab fa-facebook"></i></a>
-            <a href="#" class="social-icon twitter"><i class="fab fa-twitter"></i></a>
-            <a href="#" class="social-icon instagram"><i class="fab fa-instagram"></i></a>
-            <a href="#" class="social-icon linkedin"><i class="fab fa-linkedin"></i></a>
-          </div>
-        </div>
+ <!-- Footer -->
+<footer class="footer" id="contact" style="background-color: #000; color: #fff; padding: 2rem 0;">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-4 col-md-6 mb-4">
+        <h5>
+          <i class="fas fa-bolt" style="color: var(--primary-blue);"></i> 
+          <span style="color: var(--primary-blue);">Vishal Sales</span>
+        </h5>
+        <p>Your trusted partner for premium electronics. We bring you the latest technology with unbeatable prices and exceptional customer service.</p>
       </div>
-      <hr style="border-color: #dee2e6; margin: 2rem 0 1rem;">
-      <div class="text-center">
-        <p>&copy; 2025 Vishal Sales. All rights reserved. | <a href="#" style="color: var(--primary-blue);">Privacy Policy</a> | <a href="#" style="color: var(--primary-blue);">Terms of Service</a></p>
+      <div class="col-lg-2 col-md-6 mb-4">
+        <h6>Quick Links</h6>
+        <ul class="list-unstyled">
+          <li><a href="#home" style="color: #fff;">Home</a></li>
+          <li><a href="#brands" style="color: #fff;">Brands</a></li>
+          <li><a href="#products" style="color: #fff;">Products</a></li>
+          <li><a href="#contact" style="color: #fff;">Contact</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-2 col-md-6 mb-4">
+        <h6>Categories</h6>
+        <ul class="list-unstyled">
+          <li><a href="#" style="color: #fff;">Mobiles</a></li>
+          <li><a href="#" style="color: #fff;">Laptops</a></li>
+          <li><a href="#" style="color: #fff;">Accessories</a></li>
+          <li><a href="#" style="color: #fff;">Gaming</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-4 col-md-6 mb-4">
+        <h6>Contact Info</h6>
+        <p><i class="fas fa-envelope me-2" style="color: var(--primary-blue);"></i>support@vishalsales.com</p>
+        <p><i class="fas fa-phone me-2" style="color: var(--primary-blue);"></i>+91 (555) 123-4567</p>
+        <p><i class="fas fa-map-marker-alt me-2" style="color: var(--primary-blue);"></i>Nagpur, Maharashtra, India</p>
+        <div class="mt-3">
+          <a href="#" class="social-icon facebook" style="color: #fff;"><i class="fab fa-facebook"></i></a>
+          <a href="#" class="social-icon twitter" style="color: #fff;"><i class="fab fa-twitter"></i></a>
+          <a href="#" class="social-icon instagram" style="color: #fff;"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="social-icon linkedin" style="color: #fff;"><i class="fab fa-linkedin"></i></a>
+        </div>
       </div>
     </div>
-  </footer>
+    <hr style="border-color: #555; margin: 2rem 0 1rem;">
+    <div class="text-center">
+      <p>&copy; 2025 Vishal Sales. All rights reserved. | 
+        <a href="#" style="color: var(--primary-blue);">Privacy Policy</a> | 
+        <a href="#" style="color: var(--primary-blue);">Terms of Service</a>
+      </p>
+    </div>
+  </div>
+</footer>
+
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   

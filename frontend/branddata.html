@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Data Showcase</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #2874f0;
+            --secondary-blue: #0066cc;
+            --light-blue: #e8f1ff;
+            --faint-black: #212121; 
+            --text-gray: #878787;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--faint-black);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .navbar {
+            background: linear-gradient(90deg, var(--faint-black) 0%, #1a1a2e 100%);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            color: white !important;
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .search-box {
+            background: white;
+            border-radius: 2px;
+            padding: 8px 15px;
+            width: 400px;
+        }
+
+        .search-box input {
+            border: none;
+            outline: none;
+            width: 100%;
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, #1e5bc6 100%);
+            color: white;
+            padding: 60px 0;
+            margin-bottom: 30px;
+            animation: slideDown 0.8s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .product-row {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            animation: slideDownCard 0.6s ease-out forwards;
+            opacity: 0;
+            transform: translateY(-50px);
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .product-row:nth-child(1) { animation-delay: 0.1s; }
+        .product-row:nth-child(2) { animation-delay: 0.2s; }
+        .product-row:nth-child(3) { animation-delay: 0.3s; }
+        .product-row:nth-child(4) { animation-delay: 0.4s; }
+        .product-row:nth-child(5) { animation-delay: 0.5s; }
+        .product-row:nth-child(6) { animation-delay: 0.6s; }
+
+        @keyframes slideDownCard {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .product-row:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(40, 116, 240, 0.15);
+        }
+
+        .product-image {
+            width: 180px;
+            height: 180px;
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+
+        .product-details {
+            flex: 1;
+        }
+
+        .product-title {
+            color: var(--faint-black);
+            font-weight: 600;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .rating {
+              background: #388e3c;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 3px;
+            font-size: 0.85rem;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        .specs-list {
+            list-style: none;
+            padding: 0;
+            margin: 15px 0;
+        }
+
+        .specs-list li {
+            color: var(--text-gray);
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .specs-list li i {
+            color: var(--primary-blue);
+            width: 20px;
+            margin-right: 10px;
+        }
+
+        .price-section {
+            text-align: right;
+            padding-left: 25px;
+            border-left: 2px solid #f0f0f0;
+            flex-shrink: 0;
+            min-width: 200px;
+        }
+
+        .price {
+            color: var(--faint-black);
+            font-size: 2rem;
+            font-weight: 700;
+            display: block;
+        }
+
+        .original-price {
+            color: var(--text-gray);
+            text-decoration: line-through;
+            font-size: 1.1rem;
+            display: block;
+            margin-top: 5px;
+        }
+
+        .discount {
+            color: #388e3c;
+            font-weight: 600;
+            font-size: 1rem;
+            display: block;
+            margin-top: 5px;
+        }
+
+        .btn-primary {
+            background: var(--primary-blue);
+            border: none;
+            padding: 12px 35px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-blue);
+            transform: scale(1.05);
+        }
+
+        .category-pills {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            animation: slideDown 1s ease-out;
+        }
+
+        .category-pill {
+            background: white;
+            color: var(--faint-black);
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .category-pill:hover, .category-pill.active {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+
+        .filter-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            animation: slideDown 0.9s ease-out;
+            position: sticky;
+            top: 20px;
+        }
+
+        .filter-title {
+            color: var(--faint-black);
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .product-row {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .price-section {
+                border-left: none;
+                border-top: 2px solid #f0f0f0;
+                padding-left: 0;
+                padding-top: 20px;
+                text-align: center;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.html"><i class="fas fa-mobile-alt me-2"></i>VIVO</a>
+            <div class="search-box d-none d-md-block mx-auto">
+                <input type="text" placeholder="Search for mobiles...">
+          
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="container">
+            <h1 class="display-4 fw-bold">Best Mobile Phones</h1>
+            <p class="lead">Discover the latest smartphones with amazing deals</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Category Pills -->
+        <div class="category-pills">
+            <div class="category-pill active">All Phones</div>
+            <div class="category-pill">Under ₹10,000</div>
+            <div class="category-pill">Under ₹20,000</div>
+            <div class="category-pill">Premium</div>
+            <div class="category-pill">5G Phones</div>
+        </div>
+
+        <div class="row">
+            <!-- Filter Sidebar -->
+            <div class="col-md-3">
+                <div class="filter-section">
+                    <h5 class="filter-title">Filters</h5>
+                    <hr>
+                    <div class="mb-3">
+                        <h6>Price Range</h6>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="price1">
+                            <label class="form-check-label" for="price1">Under ₹10,000</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="price2">
+                            <label class="form-check-label" for="price2">₹10,000 - ₹20,000</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="price3">
+                            <label class="form-check-label" for="price3">₹20,000 - ₹30,000</label>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="mb-3">
+                        <h6>Brand</h6>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="brand1">
+                            <label class="form-check-label" for="brand1">Samsung</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="brand2">
+                            <label class="form-check-label" for="brand2">Apple</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="brand3">
+                            <label class="form-check-label" for="brand3">OnePlus</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products List -->
+            <div class="col-md-9" id="productContainer">
+                <!-- Product rows will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Sample data - Replace this with your actual data
+        const mobileData = [
+            {
+                name: "Samsung Galaxy S24",
+                image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400",
+                rating: 4.5,
+                ram: "8GB RAM",
+                storage: "128GB",
+                display: "6.2 inch Display",
+                camera: "50MP + 12MP + 10MP",
+                battery: "4000 mAh",
+                processor: "Snapdragon 8 Gen 3",
+                price: 74999,
+                originalPrice: 89999,
+                discount: 16
+            },
+            {
+                name: "iPhone 15 Pro",
+                image: "https://images.unsplash.com/photo-1592286927505-a0c7a2e2f49c?w=400",
+                rating: 4.7,
+                ram: "8GB RAM",
+                storage: "256GB",
+                display: "6.1 inch Display",
+                camera: "48MP + 12MP + 12MP",
+                battery: "3274 mAh",
+                processor: "A17 Pro Chip",
+                price: 134999,
+                originalPrice: 144999,
+                discount: 7
+            },
+            {
+                name: "OnePlus 12",
+                image: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=400",
+                rating: 4.6,
+                ram: "12GB RAM",
+                storage: "256GB",
+                display: "6.7 inch Display",
+                camera: "50MP + 64MP + 48MP",
+                battery: "5400 mAh",
+                processor: "Snapdragon 8 Gen 3",
+                price: 64999,
+                originalPrice: 69999,
+                discount: 7
+            },
+            {
+                name: "Xiaomi 14 Pro",
+                image: "https://images.unsplash.com/photo-1585060544812-6b45742d762f?w=400",
+                rating: 4.4,
+                ram: "12GB RAM",
+                storage: "256GB",
+                display: "6.73 inch Display",
+                camera: "50MP + 50MP + 50MP",
+                battery: "4880 mAh",
+                processor: "Snapdragon 8 Gen 3",
+                price: 54999,
+                originalPrice: 64999,
+                discount: 15
+            },
+            {
+                name: "Google Pixel 8",
+                image: "https://images.unsplash.com/photo-1603921326210-6edd2d60ca68?w=400",
+                rating: 4.5,
+                ram: "8GB RAM",
+                storage: "128GB",
+                display: "6.2 inch Display",
+                camera: "50MP + 12MP",
+                battery: "4575 mAh",
+                processor: "Google Tensor G3",
+                price: 75999,
+                originalPrice: 82999,
+                discount: 8
+            },
+            {
+                name: "Realme GT 6",
+                image: "https://images.unsplash.com/photo-1580910051074-3eb694886505?w=400",
+                rating: 4.3,
+                ram: "16GB RAM",
+                storage: "512GB",
+                display: "6.78 inch Display",
+                camera: "50MP + 8MP + 2MP",
+                battery: "5500 mAh",
+                processor: "Snapdragon 8s Gen 3",
+                price: 42999,
+                originalPrice: 49999,
+                discount: 14
+            }
+        ];
+
+        // Function to render products
+        function renderProducts(data) {
+            const container = document.getElementById('productContainer');
+            container.innerHTML = '';
+
+            data.forEach((product, index) => {
+                const productRow = `
+                    <div class="product-row">
+                        <img src="${product.image}" alt="${product.name}" class="product-image">
+                        
+                        <div class="product-details">
+                            <h3 class="product-title">${product.name}</h3>
+                            <span class="rating"><i class="fas fa-star"></i> ${product.rating}</span>
+                            
+                            <ul class="specs-list">
+                                <li><i class="fas fa-memory"></i> ${product.ram} | ${product.storage}</li>
+                                <li><i class="fas fa-tv"></i> ${product.display}</li>
+                                <li><i class="fas fa-camera"></i> ${product.camera}</li>
+                                <li><i class="fas fa-battery-full"></i> ${product.battery}</li>
+                                <li><i class="fas fa-microchip"></i> ${product.processor}</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="price-section">
+                            <span class="price">₹${product.price.toLocaleString('en-IN')}</span>
+                            <span class="original-price">₹${product.originalPrice.toLocaleString('en-IN')}</span>
+                            <span class="discount">${product.discount}% off</span>
+                            <button class="btn btn-primary w-100">Add to Cart</button>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += productRow;
+            });
+        }
+
+        // Initial render
+        renderProducts(mobileData);
+
+        // Category pill interaction
+        document.querySelectorAll('.category-pill').forEach(pill => {
+            pill.addEventListener('click', function() {
+                document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Scroll animation trigger
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'slideDownCard 0.6s ease-out forwards';
+                }
+            });
+        });
+
+        document.querySelectorAll('.product-row').forEach(card => {
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>
