@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Depends
 from services.routes import router as chat_router
 from fastapi.middleware.cors import CORSMiddleware
+from database.mongo import client as mongo_client, close_client
 from dotenv import load_dotenv
 import os
 
@@ -27,6 +28,10 @@ async def ping():
     return {"res": True}
 
 app.include_router(chat_router)
+
+@app.on_event("shutdown")
+def shutdown_db():
+    close_client()
 
 # Insert single JSON file into MongoDB on startup
 # @app.on_event("startup")

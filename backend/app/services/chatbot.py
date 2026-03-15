@@ -1,14 +1,14 @@
 import json
+import os
+from dotenv import load_dotenv
 from openai import OpenAI
 from database.mongo import client as mongo_client
 from bson import ObjectId
 
-DB_NAME = "ecommerce"
-COLLECTION_NAME = "ecommerce_data"
-
-import os
-from dotenv import load_dotenv
 load_dotenv()
+
+DB_NAME = os.getenv("MONGO_DB", "ecommerce")
+COLLECTION_NAME = os.getenv("COLLECTION_NAME", "ecommerce_data")
 
 openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
@@ -41,12 +41,14 @@ def convert_objectid(doc):
 
 def extract_intent(user_message: str) -> dict:
     response = openai_client.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model=os.getenv("OPENAI_MODEL"),
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": user_message}
         ],
-        temperature=0
+        temperature=0,
+        max_tokens=300,
+        timeout=10
     )
     raw = response.choices[0].message.content.strip()
     return json.loads(raw)

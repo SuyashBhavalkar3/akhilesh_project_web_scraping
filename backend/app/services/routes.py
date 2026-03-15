@@ -6,14 +6,18 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from bson import ObjectId
 from bson.errors import InvalidId
+from dotenv import load_dotenv
+import os
 
 from database.mongo import client as mongo_client
 from services.chatbot import chat_with_products
 
+load_dotenv()
+
 router = APIRouter()
 
-DB_NAME = "ecommerce"
-COLLECTION_NAME = "ecommerce_data"
+DB_NAME = os.getenv("MONGO_DB", "ecommerce")
+COLLECTION_NAME = os.getenv("COLLECTION_NAME", "ecommerce_data")
 
 
 # Convert ObjectId to string
