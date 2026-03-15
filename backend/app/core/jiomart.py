@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup
 
 
 class JioMartScraper:
-    def _init_(self, headless=True, delay=2):
+    def __init__(self, headless=True, delay=2):
         self.delay = delay
         self.driver = self.create_driver(headless)
         self.wait = WebDriverWait(self.driver, 20)
@@ -19,7 +19,9 @@ class JioMartScraper:
     def create_driver(self, headless=True):
         options = webdriver.ChromeOptions()
         if headless:
-            options.add_argument("--headless=new")
+            # options.add_argument("--headless=new")
+            pass
+
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
         options.add_argument("--start-maximized")
@@ -200,25 +202,35 @@ class JioMartScraper:
                 continue
 
             product_name = " ".join(title.split(" ", 3)[0:3])
+            print(f"Processing product: {product_name}")
             brand = product_name.split()[0] if product_name else " "
+            print(f"Extracted brand: {brand}")
             product_url = "https://www.jiomart.com" + a_tag['href'] if a_tag else None
+            print(f"Extracted URL: {product_url}")
 
             if not product_url:
                 continue
 
             product_id = str(uuid.uuid4())
             discounted_price = price_tag.text.strip() if price_tag else "N/A"
+            print(f"Extracted price: {discounted_price}")
             actual_price = actual_price_tag.get_text(strip=True) if actual_price_tag else discounted_price
+            print(f"Extracted actual price: {actual_price}")
             try:
                 self.driver.get(product_url)
                 time.sleep(self.delay)
                 psoup = BeautifulSoup(self.driver.page_source, "html.parser")
                 offer_section = psoup.find("div", class_="product-offers-list jm-mb-xs")
                 offers = self.extract_offers(offer_section) if offer_section else []
+                print(f"Extracted offers: {offers}")
                 rating = self.extract_rating(psoup)
+                print(f"Extracted rating: {rating}")
                 image = self.extract_image_url(psoup)
+                print(f"Extracted image URL: {image['thumbnail']}")
                 features = self.extract_mobile_features(psoup)
+                print(f"Extracted features: {features['details']['Storage']}")
                 specifications = self.extract_specifications(psoup)
+                print(f"Extracted specifications: {specifications}")
 
                 if specifications["ram"]:
                     features["details"]["Storage"]["RAM"] = specifications["ram"]
@@ -233,11 +245,11 @@ class JioMartScraper:
                 "title": product_name,
                 "discounted_price": discounted_price,
                 "price": actual_price,
-                # "image": image,
+                "image": image,
                 "rating": rating,
                 "brand": brand,
                 "offers": offers,
-                # "features": features,
+                "features": features,
                 "affiliatelink": product_url,
                 "category": "smartphone"
             })
@@ -255,8 +267,8 @@ class JioMartScraper:
         self.driver.quit()
 
 
-if __name__ == "_main_":
-    brand_list = []
+if __name__ == "__main__":
+    brand_list = ['samsung mobiles']
     max_scrolls = 60
     all_products = []
 

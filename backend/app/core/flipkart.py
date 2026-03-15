@@ -15,8 +15,12 @@ class FlipkartMobileScraper:
         self.delay = delay
         self.start_url = "https://www.flipkart.com/search?q=mobile&otracker=search&otracker1=search&marketplace=FLIPKART&as-show=on&as=off&page={}"
         chrome_options = Options()
-        chrome_options.add_argument("--headless=new")
+        chrome_options.add_argument("--start-maximized")
+        chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+        chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        # chrome_options.add_argument("--headless=new")
         self.driver = webdriver.Chrome(options=chrome_options)
+        self.driver.maximize_window()
 
     def extract_offers(self, psoup):
         offers_list = []
@@ -106,9 +110,9 @@ class FlipkartMobileScraper:
             features["details"]["storage"]["ram"] = raw_specs.get("RAM", "")
             features["details"]["storage"]["rom"] = raw_specs.get("INTERNAL STORAGE", "")
             features["details"]["manufacturer"]["brand"] = raw_specs.get("BRAND", "")
-            features["details"]["display"]["screen _resolution"] = raw_specs.get("RESOLUTION", "")
+            features["details"]["display"]["screen_resolution"] = raw_specs.get("RESOLUTION", "")
             features["details"]["battery"]["battery_capacity"] = raw_specs.get("BATTERY CAPACITY", "")
-            features["details"]["battery"]["battery_Type"] = raw_specs.get("BATTERY TYPE","")
+            features["details"]["battery"]["battery_type"] = raw_specs.get("BATTERY TYPE","")
             features["details"]["display"]["touchscreen"] = raw_specs.get("TOUCHSCREEN","")
             features["details"]["design"]["color"] = raw_specs.get("COLOR", "")
             features["details"]["display"]["display_features"] = raw_specs.get("OTHER DISPLAY FEATURE", "")
@@ -121,7 +125,7 @@ class FlipkartMobileScraper:
             if width or height or depth:
                 dimensions = f"{width} x {height} x {depth}".strip(" x")
 
-            features["details"]["Design"]["Dimensions"] = dimensions
+            features["details"]["design"]["dimensions"] = dimensions
 
             features["details"]["design"]["weight"] = raw_specs.get("WEIGHT", "")
             features["details"]["performance"]["processor"] = raw_specs.get("PROCESSOR BRAND", "")
@@ -132,11 +136,11 @@ class FlipkartMobileScraper:
             Connectivity = ""
             if Internet_connectivity or Bluetooth or B_version:
                 Connectivity = f"{Internet_connectivity} x {Bluetooth} x {B_version}".strip("x")
-            features["details"]["network&connectivity"] = Connectivity
+            features["details"]["network&connectivity"]["connectivity"] = Connectivity
             features["details"]["performance"]["operating_system"] = raw_specs.get("OPERATING SYSTEM", "")
             features["details"]["performance"]["model_number"] = raw_specs.get("MODEL NUMBER", "")
             features["details"]["battery"]["fast_charging"] = raw_specs.get("QUICK CHARGING", "")
-            features["details"]["camera"]["rear_camera"] = raw_specs.get("FLASH", "")
+            features["details"]["camera"]["rear_camera"] = raw_specs.get("PRIMARY CAMERA FEATURE", "")
             features["details"]["camera"]["front_camera"] = raw_specs.get("SECONDARY CAMERA FEATURE", "")
             features["details"]["camera"]["camera_features"] = raw_specs.get("PRIMARY CAMERA FEATURE", "")
             features["details"]["audio"]["audio_jack"] = raw_specs.get("AUDIO FORMATS", "")
@@ -151,7 +155,9 @@ class FlipkartMobileScraper:
         for page in range(1, 3):
             print(f"Scraping Page {page}")
             self.driver.get(self.start_url.format(page))
-            time.sleep(self.delay)
+            WebDriverWait(self.driver,10).until(
+            EC.presence_of_element_located((By.TAG_NAME,"body"))
+            )
 
             soup = BeautifulSoup(self.driver.page_source, "html.parser")
             links = soup.find_all("a", class_="CGtC98")
@@ -160,7 +166,9 @@ class FlipkartMobileScraper:
             for url in product_links:
                 try:
                     self.driver.get(url)
-                    time.sleep(self.delay)
+                    WebDriverWait(self.driver,10).until(
+                    EC.presence_of_element_located((By.TAG_NAME,"body"))
+                    )
                     psoup = BeautifulSoup(self.driver.page_source, "html.parser")
 
                     title_tag = psoup.find("span", class_="VU-ZEz")
