@@ -555,18 +555,51 @@
       priceValue.textContent = formatPrice(priceRange.value);
     });
 
-    fetch("mobile_accessories.json")
+    fetch("http://127.0.0.1:8000/api/productlisting?category=mobile%20accessories&minPrice=0&page=1&limit=100&sortby=-1")
       .then(res => { if (!res.ok) throw new Error('Failed'); return res.json(); })
       .then(data => {
-        productsData = data;
+        // Transform backend data to match frontend format
+        productsData = data.products.map(p => {
+          // Get the best vendor (lowest price)
+          let bestVendor = null;
+          let lowestPrice = Infinity;
+          let vendorName = 'N/A';
+          
+          if (p.vendors) {
+            Object.entries(p.vendors).forEach(([name, details]) => {
+              if (details.discountprice < lowestPrice) {
+                lowestPrice = details.discountprice;
+                bestVendor = details;
+                vendorName = name;
+              }
+            });
+          }
+          
+          return {
+            product_id: p._id || p.id,
+            id: p._id || p.id,
+            title: p.title || 'Unknown Product',
+            brand: p.brand || 'Unknown',
+            store: vendorName,
+            ecommerce: vendorName,
+            price: bestVendor ? `₹${formatPrice(bestVendor.price)}` : 'N/A',
+            discounted_price: bestVendor ? `₹${formatPrice(bestVendor.discountprice)}` : 'N/A',
+            rating: bestVendor?.rating || 'N/A',
+            image_url: p.image?.thumbnail || p.image?.urls?.[0] || 'https://via.placeholder.com/300x300?text=No+Image',
+            specifications: p.features?.details || {},
+            offers: bestVendor?.offers || [],
+            vendors: p.vendors
+          };
+        });
         filteredProducts = [...productsData];
         renderProducts(getPaginatedProducts(filteredProducts, currentPage));
         renderPagination();
         updateResultsInfo();
         refreshCompareBar();
       })
-      .catch(() => {
-        productsContainer.innerHTML = `<div class="no-results col-12"><i class="fas fa-exclamation-triangle"></i><h3>Unable to Load Products</h3><p>Please check if the mobile_accessories.json file exists.</p></div>`;
+      .catch((err) => {
+        console.error('Error loading products:', err);
+        productsContainer.innerHTML = `<div class="no-results col-12"><i class="fas fa-exclamation-triangle"></i><h3>Unable to Load Products</h3><p>Please make sure the backend server is running on port 8000.</p><p class="text-muted">Error: ${err.message}</p></div>`;
       });
 
     function renderProducts(products) {
@@ -581,13 +614,11 @@
         card.classList.add("col-xl-4", "col-lg-6", "col-md-6", "mb-4");
         card.style.animationDelay = `${index * 0.1}s`;
 
-        const imageUrl = (product.image_url && product.image_url.thumbnail)
-          ? product.image_url.thumbnail
-          : (product.image_url || 'https://via.placeholder.com/300x300?text=No+Image');
+        const imageUrl = product.image_url || 'https://via.placeholder.com/300x300?text=No+Image';
 
         const rating = product.rating || 'N/A';
-        const productId = String(product.product_id || index);
-        const isChecked = CompareManager.has(productId);
+        const productId = product.product_id || product.id || index;
+        const isChecked = CompareManager.has(String(productId));
 
         card.innerHTML = `
           <div class="card product-card h-100">
@@ -598,7 +629,7 @@
               <h5 class="product-title">${product.title}</h5>
               <div class="product-meta">
                 <div class="product-brand"><i class="fas fa-tag"></i><span><strong>Brand:</strong> ${product.brand}</span></div>
-                <div class="product-store"><i class="fas fa-store"></i><span><strong>Store:</strong> ${product.Store || product.store || product.ecommerce || 'N/A'}</span></div>
+                <div class="product-store"><i class="fas fa-store"></i><span><strong>Store:</strong> ${product.store || product.ecommerce || 'N/A'}</span></div>
               </div>
               <div class="product-pricing">
                 <span class="discounted-price">${product.discounted_price}</span>
@@ -622,11 +653,11 @@
         card.querySelector('.compare-checkbox').addEventListener('change', function() {
           if (this.checked) {
             const ok = CompareManager.add({
-              id: productId,
+              id: String(productId),
               name: product.title,
               image: imageUrl,
               brand: product.brand,
-              store: product.Store || product.store || product.ecommerce || 'N/A',
+              store: product.store || product.ecommerce || 'N/A',
               original_price: product.price,
               discounted_price: product.discounted_price,
               rating: product.rating || 'N/A',
@@ -640,7 +671,7 @@
               return;
             }
           } else {
-            CompareManager.remove(productId);
+            CompareManager.remove(String(productId));
           }
           refreshCompareBar();
         });
@@ -658,7 +689,7 @@
       filteredProducts = productsData.filter(product => {
         const title = product.title.toLowerCase();
         const brand = product.brand.toLowerCase();
-        const ecommerce = (product.ecommerce || product.Store || product.store || "").toLowerCase();
+        const ecommerce = (product.ecommerce || product.store || "").toLowerCase();
         const price = parseInt(product.discounted_price.replace(/[^\d]/g, "")) || 0;
 
         return (title.includes(query) || brand.includes(query)) &&

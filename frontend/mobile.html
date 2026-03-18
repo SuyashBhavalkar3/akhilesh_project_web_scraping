@@ -587,7 +587,7 @@
       priceValue.textContent = formatPrice(priceRange.value);
     });
 
-    fetch("http://localhost:8000/api/productlisting?category=smartphone&minPrice=0&page=1&limit=100&sortby=-1")
+    fetch("http://127.0.0.1:8000/api/productlisting?category=smartphone&minPrice=0&page=1&limit=100&sortby=-1")
       .then(res => { if (!res.ok) throw new Error('Failed'); return res.json(); })
       .then(data => {
         // Transform backend data to match frontend format
