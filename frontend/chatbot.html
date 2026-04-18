@@ -880,11 +880,29 @@
     </div>
   </div>
 
+  <script src="js/api.js"></script>
   <script>
-    const API_URL = 'http://localhost:8000';
-    let conversationHistory = [];
+    // Check if backend is running on page load
+    async function checkBackendStatus() {
+      try {
+        const response = await fetch('http://localhost:8000/ping');
+        if (response.ok) {
+          console.log('✅ Backend is connected');
+          document.querySelector('.header-subtitle').innerHTML = `
+            <div class="status-dot"></div>
+            Online • Ready to help
+          `;
+        }
+      } catch (err) {
+        console.error('❌ Backend is not running');
+        document.querySelector('.header-subtitle').innerHTML = `
+            <div class="status-dot" style="background: #ef4444;"></div>
+            Offline • Backend not connected
+          `;
+        addMessage('⚠️ Backend integration coming soon! Once the API is connected I\'ll answer your questions live. For now, please use the Contact page or call us directly.', 'bot');
+      }
+    }
 
-    // Create background particles
     function createParticles() {
       const container = document.getElementById('bgAnimation');
       for (let i = 0; i < 20; i++) {
@@ -900,7 +918,6 @@
       }
     }
 
-    // Auto-resize textarea
     const input = document.getElementById('userInput');
     input.addEventListener('input', function() {
       this.style.height = 'auto';
@@ -917,38 +934,21 @@
     async function sendMessage() {
       const msg = input.value.trim();
       if (!msg) return;
-
-      addUserMessage(msg);
+      
+      addMessage(msg, 'user');
       input.value = '';
       input.style.height = 'auto';
-      document.getElementById('sendButton').disabled = true;
-
       showTypingIndicator();
-
+      
       try {
-        const res = await fetch(`${API_URL}/chat`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: msg, history: conversationHistory })
-        });
-
-        if (!res.ok) throw new Error('Server error');
-        const data = await res.json();
-
+        const data = await chatbotAPI.send(msg);
         hideTypingIndicator();
-        addBotMessage(data.message, data.products || []);
-
-        // Update conversation history
-        conversationHistory.push({ role: 'user', content: msg });
-        conversationHistory.push({ role: 'assistant', content: data.message });
-        if (conversationHistory.length > 12) conversationHistory = conversationHistory.slice(-12);
-
+        addMessage(data.reply || 'I am here to help!', 'bot');
       } catch (err) {
+        console.error('Chatbot error:', err);
         hideTypingIndicator();
-        addBotMessage('Sorry, something went wrong. Please try again.', []);
+        addMessage('⚠️ Backend integration coming soon! Once the API is connected I\'ll answer your questions live. For now, please use the Contact page or call us directly.', 'bot');
       }
-
-      document.getElementById('sendButton').disabled = false;
     }
 
     function sendQuickMessage(message) {
@@ -956,59 +956,30 @@
       sendMessage();
     }
 
-    function addUserMessage(message) {
+    function addMessage(message, sender) {
       const chatBody = document.getElementById('chatBody');
-      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      const div = document.createElement('div');
-      div.className = 'message user';
-      div.innerHTML = `
-        <div class="message-avatar">You</div>
-        <div>
-          <div class="message-content">${escapeHtml(message)}</div>
-          <div class="message-time">${time}</div>
-        </div>`;
-      chatBody.appendChild(div);
-      scrollToBottom();
-    }
-
-    function addBotMessage(message, products) {
-      const chatBody = document.getElementById('chatBody');
-      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      const div = document.createElement('div');
-      div.className = 'message bot';
-
-      // Build product cards HTML
-      let cardsHtml = '';
-      if (products.length > 0) {
-        const cards = products.slice(0, 5).map(p => {
-          const thumbnail = getThumbnail(p);
-          const imgHtml = thumbnail
-            ? `<img src="${thumbnail}" alt="${escapeHtml(p.title || '')}" onerror="this.style.display='none'">`
-            : `<div style="width:60px;height:60px;background:rgba(74,144,226,0.1);border-radius:8px;flex-shrink:0"></div>`;
-          const price = p.discounted_price || p.price || '';
-          const rating = p.rating ? `⭐ ${p.rating}` : '';
-          return `
-            <div class="product-card">
-              ${imgHtml}
-              <div class="product-card-info">
-                <div class="product-card-title">${escapeHtml(p.title || p.brand || 'Product')}</div>
-                <div class="product-card-price">${escapeHtml(price)}</div>
-                ${rating ? `<div class="product-card-rating">${rating}</div>` : ''}
-              </div>
-            </div>`;
-        }).join('');
-        cardsHtml = `<div class="product-cards">${cards}</div>`;
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${sender}`;
+      const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      
+      if (sender === 'user') {
+        messageDiv.innerHTML = `
+          <div class="message-avatar">You</div>
+          <div>
+            <div class="message-content">${message}</div>
+            <div class="message-time">${time}</div>
+          </div>
+        `;
+      } else {
+        messageDiv.innerHTML = `
+          <div class="message-avatar">AI</div>
+          <div>
+            <div class="message-content">${message}</div>
+            <div class="message-time">${time}</div>
+          </div>
+        `;
       }
-
-      div.innerHTML = `
-        <div class="message-avatar">AI</div>
-        <div>
-          <div class="message-content">${escapeHtml(message)}</div>
-          ${cardsHtml}
-          <div class="message-time">${time}</div>
-        </div>`;
-
-      chatBody.appendChild(div);
+      chatBody.appendChild(messageDiv);
       scrollToBottom();
     }
 
@@ -1032,14 +1003,15 @@
           <div class="typing-dot"></div>
           <div class="typing-dot"></div>
           <div class="typing-dot"></div>
-        </div>`;
-      chatBody.appendChild(div);
+        </div>
+      `;
+      chatBody.appendChild(typingDiv);
       scrollToBottom();
     }
 
     function hideTypingIndicator() {
-      const el = document.getElementById('typingIndicator');
-      if (el) el.remove();
+      const indicator = document.getElementById('typingIndicator');
+      if (indicator) indicator.remove();
     }
 
     function scrollToBottom() {
@@ -1047,19 +1019,12 @@
       chatBody.scrollTop = chatBody.scrollHeight;
     }
 
-    function escapeHtml(str) {
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-    }
-
     function toggleMenu() {
-      addBotMessage('⚙️ Menu options: Settings, History, Help', []);
+      addMessage('⚙️ Menu options: Settings, History, Help, Logout', 'bot');
     }
 
     createParticles();
+    checkBackendStatus();
   </script>
 </body>
 </html>
