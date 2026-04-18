@@ -665,6 +665,66 @@
       transform: translateY(-2px);
     }
 
+    /* Product cards */
+    .product-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px;
+      max-width: 75%;
+    }
+
+    .product-card {
+      display: flex;
+      gap: 10px;
+      background: rgba(26, 26, 46, 0.8);
+      border: 1px solid rgba(74, 144, 226, 0.2);
+      border-radius: 12px;
+      padding: 10px;
+      align-items: center;
+      transition: border-color 0.2s;
+    }
+
+    .product-card:hover {
+      border-color: rgba(74, 144, 226, 0.5);
+    }
+
+    .product-card img {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.05);
+      flex-shrink: 0;
+    }
+
+    .product-card-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .product-card-title {
+      font-size: 12px;
+      color: #e8e9ea;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .product-card-price {
+      font-size: 13px;
+      color: #4ade80;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .product-card-rating {
+      font-size: 11px;
+      color: #f59e0b;
+      margin-top: 2px;
+    }
+
     /* Scrollbar */
     .chat-body::-webkit-scrollbar {
       width: 4px;
@@ -800,9 +860,9 @@
 
       <div class="chat-footer">
         <div class="quick-actions">
-          <div class="quick-action" onclick="sendQuickMessage('Help with orders')">📦 Orders</div>
-          <div class="quick-action" onclick="sendQuickMessage('Technical support')">🔧 Support</div>
-          <div class="quick-action" onclick="sendQuickMessage('Account information')">👤 Account</div>
+          <div class="quick-action" onclick="sendQuickMessage('Samsung phones under 20000')">📱 Samsung</div>
+          <div class="quick-action" onclick="sendQuickMessage('best laptops')">💻 Laptops</div>
+          <div class="quick-action" onclick="sendQuickMessage('phones with 8gb ram')">🔥 8GB RAM</div>
         </div>
         
         <div class="input-container">
@@ -821,6 +881,9 @@
   </div>
 
   <script>
+    const API_URL = 'http://localhost:8000';
+    let conversationHistory = [];
+
     // Create background particles
     function createParticles() {
       const container = document.getElementById('bgAnimation');
@@ -844,7 +907,6 @@
       this.style.height = Math.min(this.scrollHeight, 120) + 'px';
     });
 
-    // Send message on Enter
     input.addEventListener('keydown', function(e) {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
@@ -852,103 +914,132 @@
       }
     });
 
-    function sendMessage() {
+    async function sendMessage() {
       const msg = input.value.trim();
-      if (msg) {
-        addMessage(msg, 'user');
-        input.value = '';
-        input.style.height = 'auto';
-        
-        // Show typing indicator
-        showTypingIndicator();
-        
-        // Simulate bot response
-        setTimeout(() => {
-          hideTypingIndicator();
-          addBotResponse(msg);
-        }, 1500 + Math.random() * 1000);
+      if (!msg) return;
+
+      addUserMessage(msg);
+      input.value = '';
+      input.style.height = 'auto';
+      document.getElementById('sendButton').disabled = true;
+
+      showTypingIndicator();
+
+      try {
+        const res = await fetch(`${API_URL}/chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: msg, history: conversationHistory })
+        });
+
+        if (!res.ok) throw new Error('Server error');
+        const data = await res.json();
+
+        hideTypingIndicator();
+        addBotMessage(data.message, data.products || []);
+
+        // Update conversation history
+        conversationHistory.push({ role: 'user', content: msg });
+        conversationHistory.push({ role: 'assistant', content: data.message });
+        if (conversationHistory.length > 12) conversationHistory = conversationHistory.slice(-12);
+
+      } catch (err) {
+        hideTypingIndicator();
+        addBotMessage('Sorry, something went wrong. Please try again.', []);
       }
+
+      document.getElementById('sendButton').disabled = false;
     }
 
     function sendQuickMessage(message) {
-      addMessage(message, 'user');
-      showTypingIndicator();
-      
-      setTimeout(() => {
-        hideTypingIndicator();
-        addBotResponse(message);
-      }, 1200);
+      input.value = message;
+      sendMessage();
     }
 
-    function addMessage(message, sender) {
+    function addUserMessage(message) {
       const chatBody = document.getElementById('chatBody');
-      const messageDiv = document.createElement('div');
-      messageDiv.className = `message ${sender}`;
-      
-      const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-      
-      if (sender === 'user') {
-        messageDiv.innerHTML = `
-          <div class="message-avatar">You</div>
-          <div>
-            <div class="message-content">${message}</div>
-            <div class="message-time">${time}</div>
-          </div>
-        `;
-      } else {
-        messageDiv.innerHTML = `
-          <div class="message-avatar">AI</div>
-          <div>
-            <div class="message-content">${message}</div>
-            <div class="message-time">${time}</div>
-          </div>
-        `;
-      }
-      
-      chatBody.appendChild(messageDiv);
+      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const div = document.createElement('div');
+      div.className = 'message user';
+      div.innerHTML = `
+        <div class="message-avatar">You</div>
+        <div>
+          <div class="message-content">${escapeHtml(message)}</div>
+          <div class="message-time">${time}</div>
+        </div>`;
+      chatBody.appendChild(div);
       scrollToBottom();
+    }
+
+    function addBotMessage(message, products) {
+      const chatBody = document.getElementById('chatBody');
+      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const div = document.createElement('div');
+      div.className = 'message bot';
+
+      // Build product cards HTML
+      let cardsHtml = '';
+      if (products.length > 0) {
+        const cards = products.slice(0, 5).map(p => {
+          const thumbnail = getThumbnail(p);
+          const imgHtml = thumbnail
+            ? `<img src="${thumbnail}" alt="${escapeHtml(p.title || '')}" onerror="this.style.display='none'">`
+            : `<div style="width:60px;height:60px;background:rgba(74,144,226,0.1);border-radius:8px;flex-shrink:0"></div>`;
+          const price = p.discounted_price || p.price || '';
+          const rating = p.rating ? `⭐ ${p.rating}` : '';
+          return `
+            <div class="product-card">
+              ${imgHtml}
+              <div class="product-card-info">
+                <div class="product-card-title">${escapeHtml(p.title || p.brand || 'Product')}</div>
+                <div class="product-card-price">${escapeHtml(price)}</div>
+                ${rating ? `<div class="product-card-rating">${rating}</div>` : ''}
+              </div>
+            </div>`;
+        }).join('');
+        cardsHtml = `<div class="product-cards">${cards}</div>`;
+      }
+
+      div.innerHTML = `
+        <div class="message-avatar">AI</div>
+        <div>
+          <div class="message-content">${escapeHtml(message)}</div>
+          ${cardsHtml}
+          <div class="message-time">${time}</div>
+        </div>`;
+
+      chatBody.appendChild(div);
+      scrollToBottom();
+    }
+
+    function getThumbnail(product) {
+      const img = product.image || product.image_url;
+      if (!img) return '';
+      if (typeof img === 'string') return img;
+      if (Array.isArray(img)) return img[0] || '';
+      if (typeof img === 'object') return img.thumbnail || '';
+      return '';
     }
 
     function showTypingIndicator() {
       const chatBody = document.getElementById('chatBody');
-      const typingDiv = document.createElement('div');
-      typingDiv.id = 'typingIndicator';
-      typingDiv.className = 'message bot typing-indicator';
-      typingDiv.innerHTML = `
+      const div = document.createElement('div');
+      div.id = 'typingIndicator';
+      div.className = 'message bot typing-indicator';
+      div.innerHTML = `
         <div class="message-avatar">AI</div>
         <div class="typing-dots">
           <div class="typing-dot"></div>
           <div class="typing-dot"></div>
           <div class="typing-dot"></div>
-        </div>
-      `;
-      
-      chatBody.appendChild(typingDiv);
+        </div>`;
+      chatBody.appendChild(div);
       scrollToBottom();
     }
 
     function hideTypingIndicator() {
-      const indicator = document.getElementById('typingIndicator');
-      if (indicator) {
-        indicator.remove();
-      }
-    }
-
-    function addBotResponse(userMessage) {
-      let response = "Thanks for your message! I'm here to help you with any questions.";
-      
-      const lowerMsg = userMessage.toLowerCase();
-      if (lowerMsg.includes('order')) {
-        response = "I can help you with order-related questions. Could you please provide your order ID or tell me what specific information you need?";
-      } else if (lowerMsg.includes('support') || lowerMsg.includes('help')) {
-        response = "I'm here to provide technical support. What issue are you experiencing? I'll do my best to assist you.";
-      } else if (lowerMsg.includes('account')) {
-        response = "For account-related inquiries, I can help you with profile updates, password resets, and general account information. What do you need help with?";
-      } else if (lowerMsg.includes('hello') || lowerMsg.includes('hi')) {
-        response = "Hello! It's great to meet you. I'm your AI assistant and I'm here to help with any questions or tasks you might have. What can I do for you today?";
-      }
-      
-      addMessage(response, 'bot');
+      const el = document.getElementById('typingIndicator');
+      if (el) el.remove();
     }
 
     function scrollToBottom() {
@@ -956,30 +1047,18 @@
       chatBody.scrollTop = chatBody.scrollHeight;
     }
 
-    function goBackHome() {
-      // Add smooth transition effect
-      const container = document.querySelector('.chat-container');
-      container.style.transform = 'translateX(-20px)';
-      container.style.opacity = '0.8';
-      
-      setTimeout(() => {
-        container.style.transform = 'translateX(0)';
-        container.style.opacity = '1';
-      }, 200);
-      
-      // You can customize this to navigate to your actual home page
-      // window.location.href = '/'; // Uncomment to actually navigate
-      
-      // For demo purposes, show a message
-      addMessage("🏠 Navigating back to home page...", 'bot');
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
     }
 
     function toggleMenu() {
-      // Add menu functionality here
-      addMessage("⚙️ Menu options: Settings, History, Help, Logout", 'bot');
+      addBotMessage('⚙️ Menu options: Settings, History, Help', []);
     }
 
-    // Initialize
     createParticles();
   </script>
 </body>

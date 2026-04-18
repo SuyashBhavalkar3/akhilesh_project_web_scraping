@@ -13,20 +13,34 @@ COLLECTION_NAME = os.getenv("COLLECTION_NAME", "ecommerce_data")
 openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
-SYSTEM_PROMPT = """You are a smart assistant that extracts structured filters from a user's electronics product query.
+FILTER_PROMPT = """You are a filter extractor for an electronics store. Extract search filters from the user's query.
 Return ONLY a valid JSON object with these optional fields:
 {
   "category": "smartphone" | "laptop" | "laptop accessories" | "mobile accessories" | null,
   "brand": "brand name or null",
   "min_price": number or null,
   "max_price": number or null,
-  "ram": "e.g. 8gb or null",
-  "storage": "e.g. 128gb or null",
+  "ram": "e.g. 8GB or null",
+  "storage": "e.g. 128GB or null",
   "processor": "e.g. snapdragon or null",
-  "query": "short keyword for title search or null",
-  "response_message": "a friendly natural language reply to the user"
+  "query": "short keyword for title search or null"
 }
 Do not include any explanation outside the JSON."""
+
+
+CHAT_PROMPT = """You are a helpful electronics store assistant for Vishal Sales.
+Answer the customer's question using the product data provided.
+Give a detailed, friendly, textual response covering:
+- Product name and brand
+- Price (original and discounted if available)
+- Key specifications: RAM, storage, display, camera, battery, processor
+- Available offers and bank discounts
+- Rating if available
+- Any notable features
+
+If multiple products are found, summarize the top options and highlight differences.
+If no products are found, politely say so and suggest the customer refine their search.
+Keep the response conversational and helpful. Do not use markdown tables."""
 
 
 def convert_objectid(doc):
@@ -43,11 +57,11 @@ def extract_intent(user_message: str) -> dict:
     response = openai_client.chat.completions.create(
         model=os.getenv("OPENAI_MODEL"),
         messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "system", "content": FILTER_PROMPT},
             {"role": "user", "content": user_message}
         ],
         temperature=0,
-        max_tokens=300,
+        max_tokens=200,
         timeout=10
     )
     raw = response.choices[0].message.content.strip()
@@ -66,20 +80,47 @@ def build_mongo_filter(intent: dict) -> dict:
     min_p = intent.get("min_price")
     max_p = intent.get("max_price")
     if min_p is not None or max_p is not None:
-        filters["discountprice"] = {}
+        price_cond = {}
         if min_p is not None:
-            filters["discountprice"]["$gte"] = min_p
+            price_cond["$gte"] = min_p
         if max_p is not None:
-            filters["discountprice"]["$lte"] = max_p
+            price_cond["$lte"] = max_p
+        filters["discounted_price"] = price_cond
+
+    def make_regex(value: str) -> dict:
+        # Normalize "8GB" -> "8" so it matches "8 GB RAM", "8GB", "8 gb" etc.
+        number = "".join(filter(str.isdigit, value))
+        pattern = number if number else value
+        return {"$regex": pattern, "$options": "i"}
+
+    and_conditions = []
 
     if intent.get("ram"):
-        filters["features.details.storage.ram"] = {"$regex": intent["ram"], "$options": "i"}
+        ram_regex = make_regex(intent["ram"])
+        and_conditions.append({"$or": [
+            {"features.details.storage.ram": ram_regex},
+            {"features.details.Storage.RAM": ram_regex},
+            {"title": {"$regex": intent["ram"].replace("GB", "").replace("gb", "").strip() + r"\s*gb\s*ram", "$options": "i"}},
+        ]})
 
     if intent.get("storage"):
-        filters["features.details.storage.rom"] = {"$regex": intent["storage"], "$options": "i"}
+        rom_regex = make_regex(intent["storage"])
+        and_conditions.append({"$or": [
+            {"features.details.storage.rom": rom_regex},
+            {"features.details.Storage.ROM": rom_regex},
+            {"title": {"$regex": intent["storage"].replace("GB", "").replace("gb", "").strip() + r"\s*gb", "$options": "i"}},
+        ]})
 
     if intent.get("processor"):
-        filters["features.details.performance.processor"] = {"$regex": intent["processor"], "$options": "i"}
+        proc_regex = {"$regex": intent["processor"], "$options": "i"}
+        and_conditions.append({"$or": [
+            {"features.details.performance.processor": proc_regex},
+            {"features.details.Performance.processor": proc_regex},
+            {"title": proc_regex},
+        ]})
+
+    if and_conditions:
+        filters["$and"] = and_conditions
 
     if intent.get("query"):
         filters["title"] = {"$regex": intent["query"], "$options": "i"}
@@ -87,38 +128,108 @@ def build_mongo_filter(intent: dict) -> dict:
     return filters
 
 
-def get_similar_products(product: dict, limit: int = 4) -> list:
-    collection = mongo_client[DB_NAME][COLLECTION_NAME]
-    similar_filter = {}
+def iget(d: dict, key: str, default="") -> str:
+    """Case-insensitive dict lookup."""
+    key_lower = key.lower()
+    for k, v in d.items():
+        if k.lower() == key_lower:
+            return v or default
+    return default
 
-    if product.get("category"):
-        similar_filter["category"] = product["category"]
-    if product.get("brand"):
-        similar_filter["brand"] = {"$regex": product["brand"], "$options": "i"}
-    if product.get("_id"):
-        similar_filter["_id"] = {"$ne": product["_id"]}
 
-    results = list(collection.find(similar_filter).limit(limit))
-    return [convert_objectid(r) for r in results]
+def format_product_summary(products: list) -> str:
+    """Serialize only the relevant fields to keep the prompt concise."""
+    summaries = []
+    for p in products[:5]:
+        details = p.get("features", {}).get("details", {}) or {}
+
+        # Case-insensitive section lookup
+        storage = iget(details, "storage") or {}
+        performance = iget(details, "performance") or {}
+        display = iget(details, "display") or {}
+        camera = iget(details, "camera") or {}
+        battery = iget(details, "battery") or {}
+
+        # Handle thumbnail across all scraper schemas
+        image_field = p.get("image") or p.get("image_url") or {}
+        if isinstance(image_field, dict):
+            thumbnail = image_field.get("thumbnail", "")
+        elif isinstance(image_field, list):
+            thumbnail = image_field[0] if image_field else ""
+        else:
+            thumbnail = str(image_field) if image_field else ""
+
+        summary = {
+            "title": p.get("title", ""),
+            "brand": p.get("brand", ""),
+            "price": p.get("price", ""),
+            "discounted_price": p.get("discounted_price", ""),
+            "rating": p.get("rating", ""),
+            "thumbnail": thumbnail,
+            "offers": p.get("offers", []),
+            "specs": {
+                "ram": iget(storage, "ram"),
+                "storage": iget(storage, "rom"),
+                "processor": iget(performance, "processor"),
+                "os": iget(performance, "operating_system") or iget(performance, "operating system"),
+                "display": iget(display, "resolution") or iget(display, "screen_resolution") or iget(display, "screen resolution"),
+                "rear_camera": iget(camera, "rear_camera") or iget(camera, "rear camera"),
+                "front_camera": iget(camera, "front_camera") or iget(camera, "front camera"),
+                "battery": iget(battery, "battery_capacity") or iget(battery, "battery capacity"),
+                "fast_charging": iget(battery, "fast_charging") or iget(battery, "fast charging"),
+            }
+        }
+        summaries.append(summary)
+    return json.dumps(summaries, indent=2)
+
+
+def generate_chat_response(user_message: str, products: list, conversation_history: list) -> str:
+    product_context = format_product_summary(products) if products else "No matching products found."
+
+    messages = [{"role": "system", "content": CHAT_PROMPT}]
+    for msg in conversation_history[-6:]:
+        messages.append(msg)
+
+    messages.append({
+        "role": "user",
+        "content": f"Customer question: {user_message}\n\nProduct data from our store:\n{product_context}"
+    })
+
+    response = openai_client.chat.completions.create(
+        model=os.getenv("OPENAI_MODEL"),
+        messages=messages,
+        temperature=0.7,
+        max_tokens=800,
+        timeout=15
+    )
+    return response.choices[0].message.content.strip()
 
 
 def chat_with_products(user_message: str, conversation_history: list = []) -> dict:
     intent = extract_intent(user_message)
-    response_message = intent.pop("response_message", "Here are the products I found for you!")
-
     mongo_filter = build_mongo_filter(intent)
-    collection = mongo_client[DB_NAME][COLLECTION_NAME]
 
+    collection = mongo_client[DB_NAME][COLLECTION_NAME]
     products = list(collection.find(mongo_filter).limit(10))
     products = [convert_objectid(p) for p in products]
 
-    recommendations = []
-    if products:
-        recommendations = get_similar_products(products[0], limit=4)
+    # Fallback: title search using query or ram/brand keywords
+    if not products:
+        fallback_keyword = (
+            intent.get("query")
+            or intent.get("brand")
+            or (intent.get("ram", "").replace("GB", "").replace("gb", "").strip() + " gb ram" if intent.get("ram") else None)
+        )
+        if fallback_keyword:
+            fallback = {"title": {"$regex": fallback_keyword, "$options": "i"}}
+            if intent.get("category"):
+                fallback["category"] = intent["category"].lower()
+            products = list(collection.find(fallback).limit(10))
+            products = [convert_objectid(p) for p in products]
+
+    chat_response = generate_chat_response(user_message, products, conversation_history)
 
     return {
-        "message": response_message,
-        "intent": intent,
+        "message": chat_response,
         "products": products,
-        "recommendations": recommendations
     }
