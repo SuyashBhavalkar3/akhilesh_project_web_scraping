@@ -1,5 +1,5 @@
 // ─── API CONFIGURATION ───────────────────────────────────────────
-const API_BASE_URL = "http://localhost:8000/api";
+const API_BASE_URL = "https://akhileshprojectwebscraping-production.up.railway.app/api";
 
 // Helper: get token from localStorage
 const getToken = () => localStorage.getItem("vishal_token");
